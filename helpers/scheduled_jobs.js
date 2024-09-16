@@ -93,7 +93,11 @@ const onCronTick = async function (reminderConfig) {
             channel: channel.id,
             text:
               `:tada: Nice job, <#${channel.id}>! ` +
-              `There are ${messagesFilteredForConfig.length} messages from the past ${reminderConfig.hours_to_look_back} hours that are ` +
+              `There are ${
+                messagesFilteredForConfig.length
+              } messages from the past ${
+                reminderConfig.hours_to_look_back / 24
+              } days that are ` +
               `tagged with a severity and don't have either ${statusEmojis.join(
                 "/"
               )}`,
@@ -110,7 +114,9 @@ const onCronTick = async function (reminderConfig) {
             channel: channel.id,
             text:
               `:wave: Hi there, <#${channel.id}>. ` +
-              `${numMessagesString} from the past ${reminderConfig.hours_to_look_back} hours that are ` +
+              `${numMessagesString} from the past ${
+                reminderConfig.hours_to_look_back / 24
+              } days that are ` +
               `tagged with a severity and don't have either ${statusEmojis.join(
                 "/"
               )} that need your attention.`,
