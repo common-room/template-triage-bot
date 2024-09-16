@@ -109,9 +109,19 @@ const onCronTick = async function (reminderConfig) {
               ? "There is *1 message*"
               : `There are *${messagesFilteredForConfig.length} messages*`;
 
+          const listOfMessages = messagesFilteredForConfig
+            .map(
+              (message) =>
+                `\n• ${process.env.SLACK_URL}archives/${
+                  message.channel
+                }/p${message.ts.replace(".", "")}`
+            )
+            .join("");
+
           // Notify the channel about how many messages are pending
           await client.chat.postMessage({
             channel: channel.id,
+            unfurl_links: true,
             text:
               `:wave: Hi there, <#${channel.id}>. ` +
               `${numMessagesString} from the past ${
@@ -119,7 +129,7 @@ const onCronTick = async function (reminderConfig) {
               } days that are ` +
               `tagged with a severity and don't have either ${statusEmojis.join(
                 "/"
-              )} that need your attention.`,
+              )} that need your attention.${listOfMessages}`,
           });
         }
       }
