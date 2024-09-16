@@ -94,9 +94,9 @@ const onCronTick = async function (reminderConfig) {
             text:
               `:tada: Nice job, <#${channel.id}>! ` +
               `There are ${messagesFilteredForConfig.length} messages from the past ${reminderConfig.hours_to_look_back} hours that are ` +
-              `either ${levelEmojis.join(
+              `tagged with a severity and don't have either ${statusEmojis.join(
                 "/"
-              )} and don't have either ${statusEmojis.join("/")}`,
+              )}`,
           });
         } else {
           // Formulate a string with proper grammar depending on the number of messages
@@ -111,9 +111,7 @@ const onCronTick = async function (reminderConfig) {
             text:
               `:wave: Hi there, <#${channel.id}>. ` +
               `${numMessagesString} from the past ${reminderConfig.hours_to_look_back} hours that are ` +
-              `either ${levelEmojis.join(
-                "/"
-              )} and don't have either ${statusEmojis.join(
+              `tagged with a severity and don't have either ${statusEmojis.join(
                 "/"
               )} that need your attention.`,
           });
