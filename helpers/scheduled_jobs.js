@@ -6,6 +6,10 @@
 const { CronJob } = require("cron");
 const { WebClient } = require("@slack/web-api");
 
+const TimeAgo = require("javascript-time-ago");
+const en = require("javascript-time-ago/locale/en");
+TimeAgo.addDefaultLocale(en);
+
 // Internal dependencies
 const triageConfig = require("./../config");
 const { AuthedTeam } = require("./db");
@@ -109,17 +113,8 @@ const onCronTick = async function (reminderConfig) {
               ? "There is *1 message*"
               : `There are *${messagesFilteredForConfig.length} messages*`;
 
-          const listOfMessages = messagesFilteredForConfig
-            .map(
-              (message) =>
-                `\n• ${process.env.SLACK_URL}archives/${
-                  message.channel
-                }/p${message.ts.replace(".", "")}`
-            )
-            .join("");
-
           // Notify the channel about how many messages are pending
-          await client.chat.postMessage({
+          const parentMsg = await client.chat.postMessage({
             channel: channel.id,
             unfurl_links: true,
             text:
@@ -129,8 +124,23 @@ const onCronTick = async function (reminderConfig) {
               } days that are ` +
               `tagged with a severity and don't have either ${statusEmojis.join(
                 "/"
-              )} that need your attention.${listOfMessages}`,
+              )} that need your attention.`,
           });
+
+          const timeAgo = new TimeAgo("en-US");
+
+          // Create a thread with links to each message
+          for await (const message of messagesFilteredForConfig) {
+            const url = `${process.env.SLACK_URL}archives/${
+              message.channel.id
+            }/p${message.ts.replace(".", "")}`;
+            const d = new Date(parseFloat(message.ts) * 1000);
+            await client.chat.postMessage({
+              channel: parentMsg.channel,
+              thread_ts: parentMsg.ts,
+              text: `<${url}|${timeAgo.format(d)}>`,
+            });
+          }
         }
       }
     } catch (err) {
