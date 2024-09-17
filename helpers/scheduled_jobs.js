@@ -3,7 +3,7 @@
 // ======================
 
 // External dependencies
-const cron = require("node-cron");
+const { CronJob } = require("cron");
 const { WebClient } = require("@slack/web-api");
 
 // Internal dependencies
@@ -16,7 +16,7 @@ const {
 
 const onCronTick = async function (reminderConfig) {
   const now = new Date();
-  console.log("[node-cron] [onCronTick] ran " + now.toLocaleString());
+  console.log("[cron] [onCronTick] ran " + now.toLocaleString());
   console.log("Reminder config is as follows", reminderConfig);
 
   // Get all teams
@@ -142,7 +142,7 @@ const onCronTick = async function (reminderConfig) {
 
 // This exported function is loaded and executed toward the bottom of app.js
 // when run, this function looks at all defined scheduled_reminders in the config js file
-// and schedules them! Upon triggering (handled by the node-cron)
+// and schedules them! Upon triggering (handled by cron)
 const scheduleReminders = function () {
   // get the scheduled_reminders array from the config file
   const scheduledReminders = triageConfig.scheduled_reminders;
@@ -154,9 +154,15 @@ const scheduleReminders = function () {
     // For each reminder, schedule it based off of the expression value
     // and send the rest of the config to the function (onCronTick) so it knows what to do
     scheduledReminders.forEach((reminderConfig) => {
-      cron.schedule(reminderConfig.expression, () => {
-        onCronTick(reminderConfig);
-      });
+      new CronJob(
+        reminderConfig.expression,
+        () => {
+          onCronTick(reminderConfig);
+        },
+        null, // onComplete
+        true, // start
+        "America/Los_Angeles" // timeZone
+      );
     });
   } else {
     console.error("Sorry but there are no scheduled reminders to schedule.");
