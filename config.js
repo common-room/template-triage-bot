@@ -11,21 +11,24 @@ const triageConfig = {
     },
   },
   levels: {
-    Urgent: {
-      emoji: ":red_circle:",
+    P0: {
+      emoji: ":red_p0:",
     },
-    Medium: {
-      emoji: ":large_blue_circle:",
+    P1: {
+      emoji: ":orange_p1:",
     },
-    Low: {
-      emoji: ":white_circle:",
+    P2: {
+      emoji: ":yellow_p2:",
+    },
+    P3: {
+      emoji: ":blue_p3:",
     },
   },
   scheduled_reminders: [
     {
       expression: "0 9 * * 1-5",
       hours_to_look_back: 168,
-      report_on_levels: ["Low", "Urgent", "Medium"], // only report on messages with one of these levels ("OR" logic)
+      report_on_levels: ["P0", "P1", "P2", "P3"], // only report on messages with one of these levels ("OR" logic)
       report_on_does_not_have_status: ["Acknowledged", "Done"], // only report on messages that do not have either of these statuses ("OR")
     },
   ],
